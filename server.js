@@ -11,7 +11,29 @@ const auth = require("./middleware/auth");
 // Connect Database
 connectDB();
 
-app.use(cors());
+// CORS Configuration for Render deployment
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allowed origins
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://127.0.0.1:3000"
+    ].filter(Boolean); // Remove undefined values
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
